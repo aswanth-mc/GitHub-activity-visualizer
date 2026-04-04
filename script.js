@@ -1,5 +1,5 @@
 const input = document.querySelector('.input');
-const button = document.querySelector('.button');
+const button = document.querySelector('.btn');
 const card = document.querySelector('.card');
 
 button.addEventListener('click', () => {
@@ -10,10 +10,11 @@ button.addEventListener('click', () => {
     }
 
     fetch(`https://api.github.com/users/${username}`)
-        .then(res =>) {
-            throw new Error('User not found');
-        }
-        return res.json();
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('User not found');
+            }
+            return res.json();
         })
         .then(data => {
             displayUserData(data);
@@ -21,13 +22,15 @@ button.addEventListener('click', () => {
         .catch(error => {
             card
         });
+
     // Proceed with fetching user data
-function displayUser(user) {
+function displayUserData(data) {
     card.innerHTML = `
-        <img src="${user.avatar_url}" width="100">
-        <h2>${user.name}</h2>
-        <p>@${user.login}</p>
-        <p>Repos: ${user.public_repos}</p>
-        <p>Followers: ${user.followers}</p>
+        <img src="${data.avatar_url}" width="100">
+        <h2>${data.name}</h2>
+        <p>@${data.login}</p>
+        <p>Repos: ${data.public_repos}</p>
+        <p>Followers: ${data.followers}</p>
     `;
 }
+});
