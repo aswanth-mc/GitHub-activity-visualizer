@@ -7,6 +7,14 @@ body {
     height: 100vh;
 }
 
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex ;
+    justify-content: center;
+    background:red;
+}
+
 .container {
     background-color: #fff;
     padding: 20px;
@@ -24,6 +32,7 @@ button {
   padding: 10px;
   margin-left: 10px;
   cursor: pointer;
+  background-color: rgb(189, 116, 22);
 }
 
 .card {
