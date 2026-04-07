@@ -23,4 +23,10 @@ else {
 }
 
 function displayUserInfo(user) {
-    document.getElementById()
+    document.getElementById("avatar").src=user.avatar_url;
+    document.getElementById("name").textContent=user.name ||user.login;
+    document.getElementById("bio").textContent=user.bio ||"no bio available";
+    document.getElementById("repo").textContent="Public Repositories: "+user.public_repos;
+    document.getElementById("followers").textContent="Followers: "+user.followers;
+    document.getElementById("following").textContent="Following: "+user.following;
+}
