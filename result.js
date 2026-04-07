@@ -29,6 +29,8 @@ else {//
         .then(repos => {
             dispalyRepos(repos);
         });
+
+}
         
 // display user function
 function displayUserInfo(user) {
