@@ -22,11 +22,18 @@ body {
     display: flex;
     gap:20px;
 }
-.nav a{
+/* .nav a{
     margin: 0 15px;
     text-decoration: none;
     color: #fff;
+} */
+
+.links {
+    display: flex;
+    gap: 20px;
+    text-decoration: none ;
 }
+
 .button {
     padding: 10px 20px;
     background-color: rgb(189, 116, 22);
