@@ -6,7 +6,9 @@ const profile=document.querySelector('.profile');
 if (!username) {
     profile.innerHTML = 'No username provided in the URL.';
 }
-else {
+else {//
+
+    //fetch user data from GitHub API
     fetch(`https://api.github.com/users/${username}`)
         .then(response => {
             if (!response.ok) {
@@ -20,8 +22,15 @@ else {
         .catch(error => {
             profile.innerHTML = error.message;
         });
-}
 
+        //fetch user repositories
+        fetch(`https://api.github.com/users/${username}/repos`)
+        .then(res => res.json())
+        .then(repos => {
+            dispalyRepos(repos);
+        });
+        
+// display user function
 function displayUserInfo(user) {
     document.getElementById("avatar").src=user.avatar_url;
     document.getElementById("name").textContent=user.name ||user.login;
@@ -30,3 +39,19 @@ function displayUserInfo(user) {
     document.getElementById("followers").textContent="Followers: "+user.followers;
     document.getElementById("following").textContent="Following: "+user.following;
 }
+
+// display repos function
+function dispalyRepos(repos){
+    const repoContainer=document.querySelector('.repo');
+    repoContainer.innerHTML='<h3>Repositories:</h3>';
+    repos.slice(0,5).forEach(repo => {
+        const div=document.createElement('div');
+        div.innerHTML=
+        `<p><strong>${repo.name}</strong></p>
+        <p>⭐ Stars: ${repo.stargazers_count}</p>
+
+        `;
+        repoContainer.appendChild(div);
+    });
+}
+
