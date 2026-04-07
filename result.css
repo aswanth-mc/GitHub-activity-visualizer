@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+}
+
+/* MAIN GRID */
+.dashboard {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* LEFT */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* RIGHT */
+.right-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* CARDS */
+.profile-card {
+  text-align: center;
+}
+
+.profile-card img {
+  border-radius: 50%;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+.repo-card,
+.languages-card
+.languages-card p {
+  background: #334155;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+.commits-card,
+.contribution-card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
