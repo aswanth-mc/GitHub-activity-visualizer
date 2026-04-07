@@ -20,6 +20,7 @@ else {
         .catch(error => {
             profile.innerHTML = error.message;
         });
-
-
 }
+
+function displayUserInfo(user) {
+    document.getElementById()
