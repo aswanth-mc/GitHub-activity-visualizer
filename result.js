@@ -31,6 +31,13 @@ else {//
             calculateLanguage(repos);
         });
 
+        //fetch events
+        fetch(`https://api.github.com/users/${username}/events`)
+        .then(res => res.json())
+        .then(events => {
+            processCommits(events);
+        });
+
 }
         
 // display user function
@@ -93,4 +100,27 @@ function displayLanguages(languages) {
             responsive: true
         }
     });
+}
+
+// process commits function
+function processCommits(events) {
+    const commitData = {};
+
+    events.forEach(event => {
+        if (event.type === "PushEvent") {
+
+            const date = event.created_at.split("T")[0];
+            const commitCount = event.payload?.commits?.length || 0;
+
+            if (commitCount === 0) return;
+
+            if (commitData[date]) {
+                commitData[date] += commitCount;
+            } else {
+                commitData[date] = commitCount;
+            }
+        }
+    });
+
+    displayCommitsChart(commitData);
 }
