@@ -51,9 +51,9 @@ function displayUserInfo(user) {
     document.getElementById("bio").textContent = user.bio || "no bio available";
     document.getElementById("repo").textContent = user.public_repos;
     document.getElementById("followers").textContent = user.followers;
-    document.getElementById("following").textContent = user.following;
-    document.getElementById("followers").textContent = "Followers: " + user.followers;
-    document.getElementById("following").textContent = "Following: " + user.following;
+    document.getElementById("repo").textContent = user.public_repos;
+document.getElementById("followers").textContent = user.followers;
+document.getElementById("following").textContent = user.following;
 }
 
 // display repos function
