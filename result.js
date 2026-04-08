@@ -73,12 +73,13 @@ function calculateLanguage(repos){
     const languageCount={};
     repos.forEach(repo =>{
         const lang=repo.language;
-        if(languageCount[lang]){
-            languageCount[lang]++;
-        }
-        else{
-            languageCount[lang]=1;
-        }
+        if (lang) {
+    if (languageCount[lang]) {
+        languageCount[lang]++;
+    } else {
+        languageCount[lang] = 1;
+    }
+}
     })
     displayLanguages(languageCount);
 }
@@ -152,17 +153,24 @@ function displayCommitsChart(commitData) {
 
 // generate heatmap function
 function generateHeatmap(events) {
-    const dateMap ={};
-    if (events.type === "PushEvent") {
-        const date = events.created_at.split("T")[0];
-        const count = events.payload?.commits?.length || 0;
+    const dateMap = {};
 
-        if (dateMap[date]) {
-            dateMap[date] += count;
-        } else {
-            dateMap[date] = count;
-        }   
-    }
+    events.forEach(event => {
+        if (event.type === "PushEvent") {
+
+            const date = event.created_at.split("T")[0];
+            const count = event.payload?.commits?.length || 0;
+
+            if (count === 0) return;
+
+            if (dateMap[date]) {
+                dateMap[date] += count;
+            } else {
+                dateMap[date] = count;
+            }
+        }
+    });
+
     renderHeatmap(dateMap);
 }
 
