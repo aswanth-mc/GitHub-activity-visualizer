@@ -133,7 +133,7 @@ function displayLanguages(languages) {
     });
 }
 
-// Process commits function - IMPROVED
+// Process commits - FIXED
 function processCommits(events) {
     const commitData = {};
 
@@ -143,25 +143,36 @@ function processCommits(events) {
             const commitCount = event.payload?.commits?.length || 0;
 
             if (commitCount > 0) {
-                if (commitData[date]) {
-                    commitData[date] += commitCount;
-                } else {
-                    commitData[date] = commitCount;
-                }
+                commitData[date] = (commitData[date] || 0) + commitCount;
             }
         }
     });
 
+    console.log("Commit data:", commitData);
     displayCommitsChart(commitData);
 }
 
+// Display commits chart - FIXED
 function displayCommitsChart(commitData) {
     const labels = Object.keys(commitData).sort();
     const data = labels.map(date => commitData[date]);
 
-    const ctx = document.getElementById("commitChart");
+    console.log("Chart labels:", labels);
+    console.log("Chart data:", data);
 
-    new Chart(ctx, {
+    const ctx = document.getElementById("commitChart");
+    
+    if (!ctx) {
+        console.error("Canvas element not found!");
+        return;
+    }
+
+    // Destroy existing chart
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
         type: "line",
         data: {
             labels: labels,
@@ -169,38 +180,62 @@ function displayCommitsChart(commitData) {
                 label: "Commits",
                 data: data,
                 fill: true,
-                tension: 0.3,
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                backgroundColor: 'rgba(59, 130, 246, 0.15)',
                 borderColor: '#3b82f6',
+                borderWidth: 2,
                 pointBackgroundColor: '#3b82f6',
                 pointBorderColor: '#fff',
-                pointRadius: 4
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             plugins: {
                 legend: {
                     labels: {
-                        color: '#f1f5f9'
+                        color: '#f1f5f9',
+                        font: { size: 12 }
                     }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#cbd5e1',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    padding: 10
                 }
             },
             scales: {
                 y: {
                     ticks: {
-                        color: '#94a3b8'
+                        color: '#94a3b8',
+                        font: { size: 11 }
                     },
                     grid: {
-                        color: 'rgba(148, 163, 184, 0.1)'
-                    }
+                        color: 'rgba(148, 163, 184, 0.1)',
+                        drawBorder: false
+                    },
+                    beginAtZero: true
                 },
                 x: {
                     ticks: {
-                        color: '#94a3b8'
+                        color: '#94a3b8',
+                        font: { size: 11 },
+                        maxRotation: 45,
+                        minRotation: 0
                     },
                     grid: {
-                        color: 'rgba(148, 163, 184, 0.1)'
+                        display: false,
+                        drawBorder: false
                     }
                 }
             }
