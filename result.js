@@ -124,3 +124,25 @@ function processCommits(events) {
 
     displayCommitsChart(commitData);
 }
+function displayCommitsChart(commitData) {
+    const labels = Object.keys(commitData);
+    const data = Object.values(commitData);
+
+    const ctx = document.getElementById("commitChart");
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Commits",
+                data: data,
+                fill: false,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
