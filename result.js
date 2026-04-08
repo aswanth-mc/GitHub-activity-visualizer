@@ -100,7 +100,7 @@ function displayLanguages(languages) {
         "default": "#f34b7d",
 
     };
-    object.entries(languages).forEach(([lang,count]) =>{
+    Object.entries(languages).forEach(([lang,count]) =>{
         const percentage = ((count / total) * 100).toFixed(2);
         const color = colors[lang] || colors["default"];
         const div=document.createElement("div");
@@ -111,7 +111,7 @@ function displayLanguages(languages) {
             <span>${percentage}%</span>
         </div>
         <div class="lang-bar">
-                <div class="lang-fill" style="width:${percent}%; background:${color}"></div>
+                <div class="lang-fill" style="width:${percentage}%; background:${color}"></div>
             </div>
         `;
         container.appendChild(div);
