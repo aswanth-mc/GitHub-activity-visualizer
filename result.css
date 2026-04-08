@@ -54,21 +54,23 @@ body {
 .stats {
   display: flex;
   justify-content: space-between;
-  margin: 20px 0;
+  margin-top: 20px;
   text-align: center;
 }
 
-.stats div {
+.stat {
   flex: 1;
 }
 
-.stats strong {
-  display: block;
-  font-size: 20px;
+.stat h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.stats span {
-  font-size: 12px;
+.stat p {
+  margin: 5px 0 0;
+  font-size: 13px;
   color: #94a3b8;
 }
 .profile button {
