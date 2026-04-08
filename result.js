@@ -70,20 +70,27 @@ function calculateLanguage(repos){
             languageCount[lang]=1;
         }
     })
-    displayLanguage(languageCount);
+    displayLanguages(languageCount);
 }
 
 //display language function
-function displayLanguage(languageCount){
-    const languageContainer=document.querySelector('.languages');
-    languageContainer.innerHTML='<h3>Languages:</h3>';
-    
-    const sorted = Object.entries(languageCount)
-    .sort((a, b) => b[1] - a[1]);
+function displayLanguages(languages) {
+    const labels = Object.keys(languages);
+    const data = Object.values(languages);
 
-    sorted.forEach(([lang, count]) => {
-        const div = document.createElement('div');
-        div.textContent = `${lang}: ${count}`;
-        languageContainer.appendChild(div);
+    const ctx = document.getElementById("langChart");
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Languages Used",
+                data: data
+            }]
+        },
+        options: {
+            responsive: true
+        }
     });
 }
