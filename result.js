@@ -77,9 +77,13 @@ function calculateLanguage(repos){
 function displayLanguage(languageCount){
     const languageContainer=document.querySelector('.languages');
     languageContainer.innerHTML='<h3>Languages:</h3>';
-    for(let lang in languageCount){
-        const div=document.createElement('div');
-        div.textContent=`${lang}: ${languageCount[lang]}`;
+    
+    const sorted = Object.entries(languageCount)
+    .sort((a, b) => b[1] - a[1]);
+
+    sorted.forEach(([lang, count]) => {
+        const div = document.createElement('div');
+        div.textContent = `${lang}: ${count}`;
         languageContainer.appendChild(div);
-    }
+    });
 }
