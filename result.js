@@ -99,39 +99,54 @@ function calculateLanguage(repos){
 
 //display language function
 function displayLanguages(languages) {
-    const container=document.getElementById("language-list");
-    container.innerHTML="";
+    const container = document.getElementById("language-list");
+    container.innerHTML = "";
 
-    const total = Object.values(languages).reduce((a,b) => a+b,0);
+    const total = Object.values(languages).reduce((a, b) => a + b, 0);
 
-    const colors ={
+    // Extended color palette with futuristic vibes
+    const colors = {
         "JavaScript": "#f1e05a",
         "Python": "#3572A5",
         "Java": "#b07219",
         "HTML": "#e34c26",
         "CSS": "#563d7c",
-        "default": "#f34b7d",
-
+        "TypeScript": "#3178c6",
+        "Go": "#00add8",
+        "Rust": "#ce422b",
+        "PHP": "#777bb4",
+        "C++": "#f34b7d",
+        "C": "#555555",
+        "Ruby": "#cc342d",
+        "Swift": "#fa7343",
+        "Kotlin": "#7f52ff",
+        "default": "#06b6d4",
     };
-    Object.entries(languages).forEach(([lang,count]) =>{
+
+    Object.entries(languages).forEach(([lang, count], index) => {
         const percentage = ((count / total) * 100).toFixed(2);
         const color = colors[lang] || colors["default"];
-        const div=document.createElement("div");
+        
+        const div = document.createElement("div");
         div.classList.add("language-item");
-        div.innerHTML=`
-        <div class="language-header">
-            <span>${lang}</span>
-            <span>${percentage}%</span>
-        </div>
-        <div class="lang-bar">
-                <div class="lang-fill" style="width:${percentage}%; background:${color}"></div>
+        div.innerHTML = `
+            <div class="language-header">
+                <span>${lang}</span>
+                <span style="background: linear-gradient(135deg, ${color}, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">${percentage}%</span>
+            </div>
+            <div class="lang-bar">
+                <div class="lang-fill" style="width: 0%; background: linear-gradient(90deg, ${color}dd, ${color}); color: ${color};"></div>
             </div>
         `;
+        
         container.appendChild(div);
+        
+        // Animate the fill width after a short delay
+        setTimeout(() => {
+            div.querySelector(".lang-fill").style.width = `${percentage}%`;
+        }, 50 + index * 100);
     });
-
 }
-
 // process commits function
 function processCommits(events) {
     const commitData = {};
