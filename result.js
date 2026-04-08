@@ -62,11 +62,21 @@ function dispalyRepos(repos){
     repoContainer.innerHTML='<h3>Repositories:</h3>';
     repos.slice(0,5).forEach(repo => {
         const div=document.createElement('div');
-        div.innerHTML=
-        `<p><strong>${repo.name}</strong></p>
-        <p>⭐ Stars: ${repo.stargazers_count}</p>
+        div.innerHTML = `
+    <div class="repo-header">
+        <h4>${repo.name}</h4>
+        <span class="lang">${repo.language || "N/A"}</span>
+    </div>
 
-        `;
+    <div class="repo-stats">
+        ⭐ ${repo.stargazers_count}
+        🍴 ${repo.forks_count}
+    </div>
+
+    <a href="${repo.html_url}" target="_blank" class="repo-link">
+        View Repo →
+    </a>
+`;
         repoContainer.appendChild(div);
     });
 }
