@@ -86,24 +86,37 @@ function calculateLanguage(repos){
 
 //display language function
 function displayLanguages(languages) {
-    const labels = Object.keys(languages);
-    const data = Object.values(languages);
+    const container=document.getElementById("language-list");
+    container.innerHTML="";
 
-    const ctx = document.getElementById("langChart");
+    const total = Object.values(languages).reduce((a,b) => a+b,0);
 
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Languages Used",
-                data: data
-            }]
-        },
-        options: {
-            responsive: true
-        }
+    const colors ={
+        "JavaScript": "#f1e05a",
+        "Python": "#3572A5",
+        "Java": "#b07219",
+        "HTML": "#e34c26",
+        "CSS": "#563d7c",
+        "default": "#f34b7d",
+
+    };
+    object.entries(languages).forEach(([lang,count]) =>{
+        const percentage = ((count / total) * 100).toFixed(2);
+        const color = colors[lang] || colors["default"];
+        const div=document.createElement("div");
+        div.classList.add("language-item");
+        div.innerHTML=`
+        <div class="language-header">
+            <span>${lang}</span>
+            <span>${percentage}%</span>
+        </div>
+        <div class="lang-bar">
+                <div class="lang-fill" style="width:${percent}%; background:${color}"></div>
+            </div>
+        `;
+        container.appendChild(div);
     });
+
 }
 
 // process commits function
