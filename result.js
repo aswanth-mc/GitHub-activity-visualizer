@@ -1,14 +1,12 @@
 const params = new URLSearchParams(window.location.search);
 const username = params.get('user');
 
-const profile=document.querySelector('.profile');
+const profile = document.querySelector('.profile');
 
 if (!username) {
     profile.innerHTML = 'No username provided in the URL.';
-}
-else {//
-
-    //fetch user data from GitHub API
+} else {
+    // Fetch user data from GitHub API
     fetch(`https://api.github.com/users/${username}`)
         .then(response => {
             if (!response.ok) {
@@ -16,34 +14,36 @@ else {//
             }
             return response.json();
         })
-        .then(user=>{
+        .then(user => {
             displayUserInfo(user);
         })
         .catch(error => {
             profile.innerHTML = error.message;
         });
 
-        //fetch user repositories
-        fetch(`https://api.github.com/users/${username}/repos`)
+    // Fetch user repositories
+    fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
         .then(res => res.json())
         .then(repos => {
             dispalyRepos(repos);
             calculateLanguage(repos);
         });
 
-        //fetch events
-        fetch(`https://api.github.com/users/${username}/events`)
+    // Fetch events with better handling
+    fetch(`https://api.github.com/users/${username}/events/public?per_page=300`)
         .then(res => res.json())
         .then(events => {
             processCommits(events);
             generateHeatmap(events);
+        })
+        .catch(error => {
+            console.log("Error fetching events:", error);
+            // Fallback: show message
+            document.getElementById("heatmap").innerHTML = '<p style="color: #94a3b8;">Limited contribution data available</p>';
         });
-
-        
-
 }
-        
-// display user function
+
+// Display user function
 function displayUserInfo(user) {
     document.getElementById("avatar").src = user.avatar_url;
     document.getElementById("name").textContent = user.name || user.login;
@@ -51,17 +51,15 @@ function displayUserInfo(user) {
     document.getElementById("bio").textContent = user.bio || "no bio available";
     document.getElementById("repo").textContent = user.public_repos;
     document.getElementById("followers").textContent = user.followers;
-    document.getElementById("repo").textContent = user.public_repos;
-document.getElementById("followers").textContent = user.followers;
-document.getElementById("following").textContent = user.following;
+    document.getElementById("following").textContent = user.following;
 }
 
-// display repos function
-function dispalyRepos(repos){
-    const repoContainer=document.querySelector('.repo');
-    repoContainer.innerHTML='<h3>Repositories:</h3>';
-    repos.slice(0,5).forEach(repo => {
-        const div=document.createElement('div');
+// Display repos function
+function dispalyRepos(repos) {
+    const repoContainer = document.querySelector('.repo');
+    repoContainer.innerHTML = '<h3>Repositories:</h3>';
+    repos.slice(0, 5).forEach(repo => {
+        const div = document.createElement('div');
         div.innerHTML = `
     <div class="repo-header">
         <h4>${repo.name}</h4>
@@ -81,30 +79,29 @@ function dispalyRepos(repos){
     });
 }
 
-// language calculation
-function calculateLanguage(repos){
-    const languageCount={};
-    repos.forEach(repo =>{
-        const lang=repo.language;
+// Language calculation
+function calculateLanguage(repos) {
+    const languageCount = {};
+    repos.forEach(repo => {
+        const lang = repo.language;
         if (lang) {
-    if (languageCount[lang]) {
-        languageCount[lang]++;
-    } else {
-        languageCount[lang] = 1;
-    }
-}
+            if (languageCount[lang]) {
+                languageCount[lang]++;
+            } else {
+                languageCount[lang] = 1;
+            }
+        }
     })
     displayLanguages(languageCount);
 }
 
-//display language function
+// Display language function
 function displayLanguages(languages) {
     const container = document.getElementById("language-list");
     container.innerHTML = "";
 
     const total = Object.values(languages).reduce((a, b) => a + b, 0);
 
-    // Extended color palette with futuristic vibes
     const colors = {
         "JavaScript": "#f1e05a",
         "Python": "#3572A5",
@@ -115,63 +112,52 @@ function displayLanguages(languages) {
         "Go": "#00add8",
         "Rust": "#ce422b",
         "PHP": "#777bb4",
-        "C++": "#f34b7d",
-        "C": "#555555",
-        "Ruby": "#cc342d",
-        "Swift": "#fa7343",
-        "Kotlin": "#7f52ff",
-        "default": "#06b6d4",
+        "default": "#f34b7d",
     };
-
-    Object.entries(languages).forEach(([lang, count], index) => {
+    
+    Object.entries(languages).forEach(([lang, count]) => {
         const percentage = ((count / total) * 100).toFixed(2);
         const color = colors[lang] || colors["default"];
-        
         const div = document.createElement("div");
         div.classList.add("language-item");
         div.innerHTML = `
-            <div class="language-header">
-                <span>${lang}</span>
-                <span style="background: linear-gradient(135deg, ${color}, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">${percentage}%</span>
-            </div>
-            <div class="lang-bar">
-                <div class="lang-fill" style="width: 0%; background: linear-gradient(90deg, ${color}dd, ${color}); color: ${color};"></div>
-            </div>
+        <div class="language-header">
+            <span>${lang}</span>
+            <span style="background: linear-gradient(135deg, ${color}, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">${percentage}%</span>
+        </div>
+        <div class="lang-bar">
+            <div class="lang-fill" style="width:${percentage}%; background:${color}"></div>
+        </div>
         `;
-        
         container.appendChild(div);
-        
-        // Animate the fill width after a short delay
-        setTimeout(() => {
-            div.querySelector(".lang-fill").style.width = `${percentage}%`;
-        }, 50 + index * 100);
     });
 }
-// process commits function
+
+// Process commits function - IMPROVED
 function processCommits(events) {
     const commitData = {};
 
     events.forEach(event => {
         if (event.type === "PushEvent") {
-
             const date = event.created_at.split("T")[0];
             const commitCount = event.payload?.commits?.length || 0;
 
-            if (commitCount === 0) return;
-
-            if (commitData[date]) {
-                commitData[date] += commitCount;
-            } else {
-                commitData[date] = commitCount;
+            if (commitCount > 0) {
+                if (commitData[date]) {
+                    commitData[date] += commitCount;
+                } else {
+                    commitData[date] = commitCount;
+                }
             }
         }
     });
 
     displayCommitsChart(commitData);
 }
+
 function displayCommitsChart(commitData) {
-    const labels = Object.keys(commitData);
-    const data = Object.values(commitData);
+    const labels = Object.keys(commitData).sort();
+    const data = labels.map(date => commitData[date]);
 
     const ctx = document.getElementById("commitChart");
 
@@ -182,77 +168,126 @@ function displayCommitsChart(commitData) {
             datasets: [{
                 label: "Commits",
                 data: data,
-                fill: false,
-                tension: 0.3
+                fill: true,
+                tension: 0.3,
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderColor: '#3b82f6',
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointRadius: 4
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#f1f5f9'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.1)'
+                    }
+                }
+            }
         }
     });
 }
 
-// Generate heatmap function - IMPROVED
+// Generate heatmap - IMPROVED VERSION
 function generateHeatmap(events) {
     const dateMap = {};
     const today = new Date();
-    
-    // Initialize last 365 days with 0
-    for (let i = 365; i >= 0; i--) {
+
+    // Initialize last 90 days (API limit)
+    for (let i = 89; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split("T")[0];
         dateMap[dateStr] = 0;
     }
 
-    // Count all activity types, not just PushEvents
+    console.log("Total events received:", events.length);
+
+    // Count all activity types
     events.forEach(event => {
-        if (event.type === "PushEvent" || 
-            event.type === "PullRequestEvent" || 
-            event.type === "IssuesEvent" ||
-            event.type === "CreateEvent" ||
-            event.type === "DeleteEvent") {
-            
-            const date = event.created_at.split("T")[0];
-            const count = event.payload?.commits?.length || event.payload?.action ? 1 : 0;
-            
-            if (count > 0 && dateMap[date] !== undefined) {
-                dateMap[date] += count;
-            }
+        const date = event.created_at.split("T")[0];
+        let count = 0;
+
+        if (event.type === "PushEvent") {
+            count = event.payload?.commits?.length || 0;
+        } else if (event.type === "PullRequestEvent") {
+            count = 1;
+        } else if (event.type === "IssuesEvent") {
+            count = 1;
+        } else if (event.type === "CreateEvent") {
+            count = 1;
+        } else if (event.type === "DeleteEvent") {
+            count = 1;
+        }
+
+        if (count > 0 && dateMap[date] !== undefined) {
+            dateMap[date] += count;
         }
     });
 
+    console.log("Date map:", dateMap);
     renderHeatmap(dateMap);
 }
 
-// Render heatmap with better styling - IMPROVED
 function renderHeatmap(data) {
     const container = document.getElementById("heatmap");
     container.innerHTML = "";
 
     const dates = Object.keys(data).sort();
-    const maxCount = Math.max(...Object.values(data), 1);
+    const values = Object.values(data);
+    const maxCount = Math.max(...values, 1);
+
+    let totalContributions = 0;
+    dates.forEach(date => {
+        totalContributions += data[date];
+    });
+
+    // Add total contributions info
+    const infoDiv = document.createElement("div");
+    infoDiv.style.cssText = "grid-column: 1/-1; color: #94a3b8; font-size: 12px; margin-bottom: 10px;";
+    infoDiv.textContent = `Total contributions (last 90 days): ${totalContributions}`;
+    container.appendChild(infoDiv);
 
     dates.forEach(date => {
         const count = data[date];
         const cell = document.createElement("div");
         cell.classList.add("cell");
-        
-        // Add tooltip with date and count
+
+        // Add tooltip
         cell.title = `${date}: ${count} contributions`;
 
-        // Dynamic color intensity based on max value
+        // Color based on intensity
         if (count === 0) {
             cell.style.background = "#0f172a";
-            cell.style.opacity = "0.5";
+            cell.style.opacity = "0.3";
         } else if (count > maxCount * 0.75) {
-            cell.style.background = "#22c55e"; // Dark green
+            cell.style.background = "#22c55e";
         } else if (count > maxCount * 0.5) {
-            cell.style.background = "#4ade80"; // Medium green
+            cell.style.background = "#4ade80";
         } else if (count > maxCount * 0.25) {
-            cell.style.background = "#86efac"; // Light green
+            cell.style.background = "#86efac";
         } else {
-            cell.style.background = "#d1fae5"; // Very light green
+            cell.style.background = "#dcfce7";
         }
 
         container.appendChild(cell);
