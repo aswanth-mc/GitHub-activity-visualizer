@@ -36,7 +36,10 @@ else {//
         .then(res => res.json())
         .then(events => {
             processCommits(events);
+            generateHeatmap(events);
         });
+
+        
 
 }
         
@@ -144,5 +147,46 @@ function displayCommitsChart(commitData) {
         options: {
             responsive: true
         }
+    });
+}
+
+// generate heatmap function
+function generateHeatmap(events) {
+    const dateMap ={};
+    if (events.type === "PushEvent") {
+        const date = events.created_at.split("T")[0];
+        const count = events.payload?.commits?.length || 0;
+
+        if (dateMap[date]) {
+            dateMap[date] += count;
+        } else {
+            dateMap[date] = count;
+        }   
+    }
+    renderHeatmap(dateMap);
+}
+
+function renderHeatmap(data) {
+    const container = document.getElementById("heatmap");
+    container.innerHTML = "";
+
+    const dates = Object.keys(data);
+
+    dates.forEach(date => {
+        const count = data[date];
+
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+
+        // color intensity
+        if (count > 5) {
+            cell.style.background = "#22c55e"; 
+        } else if (count > 2) {
+            cell.style.background = "#4ade80";
+        } else if (count > 0) {
+            cell.style.background = "#86efac";
+        }
+
+        container.appendChild(cell);
     });
 }
