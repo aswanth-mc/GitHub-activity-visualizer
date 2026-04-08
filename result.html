@@ -16,10 +16,13 @@
             <div class="profile">
                 <img id="avatar" alt="avatar" width="100">
                 <h2 id="name"></h2>
+                <p id="username"></p>
                 <p id="bio"></p>
-                <p id="repo"></p>
-                <p id="followers"></p>
-                <p id="following"></p>
+                <div class="stats">
+                    <div><strong id="repo"></strong><span>Repositories</span></div>
+                    <div><strong id="followers"></strong><span>Followers</span></div>
+                    <div><strong id="following"></strong><span>Following</span></div>
+                </div>
             </div>
             <div class="repo">repo</div>
         </div>
@@ -31,11 +34,11 @@
             <div class="commits">
                 <h3>Commits Over Time</h3>
                 <canvas id="commitChart"></canvas>
-        </div>
-        <div class="contribution">
-            <h3>Contribution Activity</h3>
-            <div id="heatmap"></div>
-        </div>
+            </div>
+            <div class="contribution">
+                <h3>Contribution Activity</h3>
+                <div id="heatmap"></div>
+            </div>
     </main>
     <script src="result.js"></script>
 </body>
