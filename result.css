@@ -52,3 +52,19 @@ body {
   margin-top: 10px;
   border-radius: 5px;
 }
+
+.languages {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.languages div {
+  background: #334155;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+canvas {
+  margin-top: 20px;
+}
