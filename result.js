@@ -192,22 +192,32 @@ function displayCommitsChart(commitData) {
     });
 }
 
-// generate heatmap function
+// Generate heatmap function - IMPROVED
 function generateHeatmap(events) {
     const dateMap = {};
+    const today = new Date();
+    
+    // Initialize last 365 days with 0
+    for (let i = 365; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        dateMap[dateStr] = 0;
+    }
 
+    // Count all activity types, not just PushEvents
     events.forEach(event => {
-        if (event.type === "PushEvent") {
-
+        if (event.type === "PushEvent" || 
+            event.type === "PullRequestEvent" || 
+            event.type === "IssuesEvent" ||
+            event.type === "CreateEvent" ||
+            event.type === "DeleteEvent") {
+            
             const date = event.created_at.split("T")[0];
-            const count = event.payload?.commits?.length || 0;
-
-            if (count === 0) return;
-
-            if (dateMap[date]) {
+            const count = event.payload?.commits?.length || event.payload?.action ? 1 : 0;
+            
+            if (count > 0 && dateMap[date] !== undefined) {
                 dateMap[date] += count;
-            } else {
-                dateMap[date] = count;
             }
         }
     });
@@ -215,25 +225,34 @@ function generateHeatmap(events) {
     renderHeatmap(dateMap);
 }
 
+// Render heatmap with better styling - IMPROVED
 function renderHeatmap(data) {
     const container = document.getElementById("heatmap");
     container.innerHTML = "";
 
-    const dates = Object.keys(data);
+    const dates = Object.keys(data).sort();
+    const maxCount = Math.max(...Object.values(data), 1);
 
     dates.forEach(date => {
         const count = data[date];
-
         const cell = document.createElement("div");
         cell.classList.add("cell");
+        
+        // Add tooltip with date and count
+        cell.title = `${date}: ${count} contributions`;
 
-        // color intensity
-        if (count > 5) {
-            cell.style.background = "#22c55e"; 
-        } else if (count > 2) {
-            cell.style.background = "#4ade80";
-        } else if (count > 0) {
-            cell.style.background = "#86efac";
+        // Dynamic color intensity based on max value
+        if (count === 0) {
+            cell.style.background = "#0f172a";
+            cell.style.opacity = "0.5";
+        } else if (count > maxCount * 0.75) {
+            cell.style.background = "#22c55e"; // Dark green
+        } else if (count > maxCount * 0.5) {
+            cell.style.background = "#4ade80"; // Medium green
+        } else if (count > maxCount * 0.25) {
+            cell.style.background = "#86efac"; // Light green
+        } else {
+            cell.style.background = "#d1fae5"; // Very light green
         }
 
         container.appendChild(cell);
