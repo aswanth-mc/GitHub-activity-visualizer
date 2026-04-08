@@ -28,6 +28,7 @@ else {//
         .then(res => res.json())
         .then(repos => {
             dispalyRepos(repos);
+            calculateLanguage(repos);
         });
 
 }
@@ -57,3 +58,27 @@ function dispalyRepos(repos){
     });
 }
 
+// language calculation
+function calculateLanguage(repos){
+    const languageCount={};
+    repos.forEach(repo =>{
+        if(languageCount[lang]){
+            languageCount[lang]++;
+        }
+        else{
+            languageCount[lang]=1;
+        }
+    })
+    displayLanguage(languageCount);
+}
+
+//display language function
+function displayLanguage(languageCount){
+    const languageContainer=document.querySelector('.language');
+    languageContainer.innerHTML='<h3>Languages:</h3>';
+    for(let lang in language){
+        const div=document.createElement('div');
+        div.textContent=`${lang}: ${languageCount[lang]}`;
+        languageContainer.appendChild(div);
+    }
+}
