@@ -45,12 +45,15 @@ else {//
         
 // display user function
 function displayUserInfo(user) {
-    document.getElementById("avatar").src=user.avatar_url;
-    document.getElementById("name").textContent=user.name ||user.login;
-    document.getElementById("bio").textContent=user.bio ||"no bio available";
-    document.getElementById("repo").textContent="Public Repositories: "+user.public_repos;
-    document.getElementById("followers").textContent="Followers: "+user.followers;
-    document.getElementById("following").textContent="Following: "+user.following;
+    document.getElementById("avatar").src = user.avatar_url;
+    document.getElementById("name").textContent = user.name || user.login;
+    document.getElementById("username").textContent = "@" + user.login;
+    document.getElementById("bio").textContent = user.bio || "no bio available";
+    document.getElementById("repo").textContent = user.public_repos;
+    document.getElementById("followers").textContent = user.followers;
+    document.getElementById("following").textContent = user.following;
+    document.getElementById("followers").textContent = "Followers: " + user.followers;
+    document.getElementById("following").textContent = "Following: " + user.following;
 }
 
 // display repos function
