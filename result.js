@@ -73,36 +73,50 @@ function calculateLanguage(repos){
     const languageCount={};
     repos.forEach(repo =>{
         const lang=repo.language;
-        if(languageCount[lang]){
-            languageCount[lang]++;
-        }
-        else{
-            languageCount[lang]=1;
-        }
+        if (lang) {
+    if (languageCount[lang]) {
+        languageCount[lang]++;
+    } else {
+        languageCount[lang] = 1;
+    }
+}
     })
     displayLanguages(languageCount);
 }
 
 //display language function
 function displayLanguages(languages) {
-    const labels = Object.keys(languages);
-    const data = Object.values(languages);
+    const container=document.getElementById("language-list");
+    container.innerHTML="";
 
-    const ctx = document.getElementById("langChart");
+    const total = Object.values(languages).reduce((a,b) => a+b,0);
 
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Languages Used",
-                data: data
-            }]
-        },
-        options: {
-            responsive: true
-        }
+    const colors ={
+        "JavaScript": "#f1e05a",
+        "Python": "#3572A5",
+        "Java": "#b07219",
+        "HTML": "#e34c26",
+        "CSS": "#563d7c",
+        "default": "#f34b7d",
+
+    };
+    Object.entries(languages).forEach(([lang,count]) =>{
+        const percentage = ((count / total) * 100).toFixed(2);
+        const color = colors[lang] || colors["default"];
+        const div=document.createElement("div");
+        div.classList.add("language-item");
+        div.innerHTML=`
+        <div class="language-header">
+            <span>${lang}</span>
+            <span>${percentage}%</span>
+        </div>
+        <div class="lang-bar">
+                <div class="lang-fill" style="width:${percentage}%; background:${color}"></div>
+            </div>
+        `;
+        container.appendChild(div);
     });
+
 }
 
 // process commits function
@@ -152,17 +166,24 @@ function displayCommitsChart(commitData) {
 
 // generate heatmap function
 function generateHeatmap(events) {
-    const dateMap ={};
-    if (events.type === "PushEvent") {
-        const date = events.created_at.split("T")[0];
-        const count = events.payload?.commits?.length || 0;
+    const dateMap = {};
 
-        if (dateMap[date]) {
-            dateMap[date] += count;
-        } else {
-            dateMap[date] = count;
-        }   
-    }
+    events.forEach(event => {
+        if (event.type === "PushEvent") {
+
+            const date = event.created_at.split("T")[0];
+            const count = event.payload?.commits?.length || 0;
+
+            if (count === 0) return;
+
+            if (dateMap[date]) {
+                dateMap[date] += count;
+            } else {
+                dateMap[date] = count;
+            }
+        }
+    });
+
     renderHeatmap(dateMap);
 }
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,11 @@
     <link rel="stylesheet" href="result.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <h1>git hub profile</h1>
-    <main class="dashbord">
-        <div class="left-pannel">
+    <main class="dashboard">
+        <div class="left-panell">
             <div class="profile">
                 <img id="avatar" alt="avatar" width="100">
                 <h2 id="name"></h2>
@@ -21,19 +23,21 @@
             </div>
             <div class="repo">repo</div>
         </div>
-        <div class="right-pannel">
-            <div class="languages">languages
-                <canvas id="langChart"></canvas>
+        <div class="right-panel">
+            <div class="languages">
+                <h3>Languages Used</h3>
+                <div id="language-list"></div>
             </div>
-            <<div class="commits">
-    <h3>Commits Over Time</h3>
-    <canvas id="commitChart"></canvas>
-</div>
-            <div class="contribution">
-    <h3>Contribution Activity</h3>
-    <div id="heatmap"></div>
-</div>
+            <div class="commits">
+                <h3>Commits Over Time</h3>
+                <canvas id="commitChart"></canvas>
+        </div>
+        <div class="contribution">
+            <h3>Contribution Activity</h3>
+            <div id="heatmap"></div>
+        </div>
     </main>
     <script src="result.js"></script>
 </body>
+
 </html>
