@@ -27,17 +27,65 @@ body {
   gap: 20px;
 }
 
-.profile{
-  background: #1e293b;
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
+.profile {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  padding: 25px;
+  border-radius: 15px;
   text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 .profile img {
-  border-radius: 50%;
-  margin-bottom: 10px;
+  width: 100%;
+  max-width: 220px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+#name {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 10px 0 5px;
+}
+
+#username {
+  color: #94a3b8;
+  font-size: 14px;
+}
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.stats div {
+  flex: 1;
+}
+
+.stats strong {
+  display: block;
+  font-size: 20px;
+}
+
+.stats span {
+  font-size: 12px;
+  color: #94a3b8;
+}
+.profile button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.profile button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(59,130,246,0.5);
 }
 
 .repo {
