@@ -11,11 +11,7 @@ A modern web dashboard to visualize GitHub user activity including profile detai
 
 ---
 
-## 📸 Preview
 
-![Dashboard Preview](./preview.png)
-
----
 
 ## ✨ Features
 
