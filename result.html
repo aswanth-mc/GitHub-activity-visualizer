@@ -1,59 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>result</title>
+    <title>GitHub Activity Dashboard</title>
     <link rel="stylesheet" href="result.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-    <h1>git hub profile</h1>
-    <main class="dashboard">
-        <div class="left-panell">
-            <div class="profile">
-                <img id="avatar" alt="avatar" width="100">
-                <h2 id="name"></h2>
-                <p id="username"></p>
-                <p id="bio"></p>
-                <div class="stats">
-                    <div class="stat">
-                        <h3 id="repo"></h3>
-                        <p>Repositories</p>
-                    </div>
+    <div class="page-bg"></div>
 
-                    <div class="stat">
-                        <h3 id="followers"></h3>
-                        <p>Followers</p>
-                    </div>
+    <header class="topbar">
+        <a href="index.html" class="back-link">Back</a>
+        <h1>GitHub Profile Dashboard</h1>
+    </header>
 
-                    <div class="stat">
-                        <h3 id="following"></h3>
-                        <p>Following</p>
+    <main class="dashboard-wrap">
+        <section class="dashboard">
+            <div class="left-panel">
+                <div class="card profile">
+                    <img id="avatar" alt="avatar">
+                    <h2 id="name"></h2>
+                    <p id="username"></p>
+                    <p id="bio"></p>
+                    <div class="stats">
+                        <div class="stat">
+                            <h3 id="repo"></h3>
+                            <p>Repositories</p>
+                        </div>
+
+                        <div class="stat">
+                            <h3 id="followers"></h3>
+                            <p>Followers</p>
+                        </div>
+
+                        <div class="stat">
+                            <h3 id="following"></h3>
+                            <p>Following</p>
+                        </div>
                     </div>
                 </div>
+
+                <div class="card repo">repo</div>
             </div>
-            <div class="repo">repo</div>
-        </div>
-        <div class="right-panel">
-            <div class="languages">
-                <h3>Languages Used</h3>
-                <div id="language-list"></div>
-            </div>
-            <div class="commits">
-                <h3>Commits Over Time</h3>
-                <div class="chart-container">
-                    <canvas id="commitChart"></canvas>
+
+            <div class="right-panel">
+                <div class="card languages">
+                    <h3>Languages Used</h3>
+                    <div id="language-list"></div>
+                </div>
+
+                <div class="card commits">
+                    <h3>Commits Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="commitChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card contribution">
+                    <h3>Contribution Activity</h3>
+                    <div id="heatmap"></div>
                 </div>
             </div>
-            <div class="contribution">
-                <h3>Contribution Activity</h3>
-                <div id="heatmap"></div>
-            </div>
+        </section>
     </main>
+
     <script src="result.js"></script>
 </body>
-
 </html>

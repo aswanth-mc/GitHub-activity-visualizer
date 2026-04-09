@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const username = params.get('user');
+let chartInstance = null;
 
 const profile = document.querySelector('.profile');
 
