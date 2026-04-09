@@ -3,10 +3,38 @@ const username = params.get('user');
 let chartInstance = null;
 
 const profile = document.querySelector('.profile');
+const DEBUG_RUN_ID = "pre-fix-1";
+const commitStatus = document.getElementById("commit-status");
+
+function agentDebugLog(hypothesisId, location, message, data) {
+    fetch('http://127.0.0.1:7820/ingest/93c9ab97-3b4f-46db-90c4-c867da140acb', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': 'bfbe73'
+        },
+        body: JSON.stringify({
+            sessionId: 'bfbe73',
+            runId: DEBUG_RUN_ID,
+            hypothesisId,
+            location,
+            message,
+            data,
+            timestamp: Date.now()
+        })
+    }).catch(() => { });
+}
 
 if (!username) {
+    // #region agent log
+    agentDebugLog("H1", "result.js:startup", "Missing username in URL", { hasUsername: false });
+    // #endregion
     profile.innerHTML = 'No username provided in the URL.';
 } else {
+    // #region agent log
+    agentDebugLog("H1", "result.js:startup", "Username detected", { hasUsername: true, usernameLength: username.length });
+    // #endregion
+
     // Fetch user data from GitHub API
     fetch(`https://api.github.com/users/${username}`)
         .then(response => {
@@ -32,13 +60,55 @@ if (!username) {
 
     // Fetch events with better handling
     fetch(`https://api.github.com/users/${username}/events/public?per_page=300`)
-        .then(res => res.json())
+        .then(res => {
+            // #region agent log
+            agentDebugLog("H2", "result.js:eventsFetch", "Events response received", { ok: res.ok, status: res.status });
+            // #endregion
+            if (!res.ok) {
+                throw new Error(`GitHub events API error (${res.status}). You may be rate-limited.`);
+            }
+            return res.json();
+        })
         .then(events => {
-            processCommits(events);
+            // #region agent log
+            agentDebugLog("H2", "result.js:eventsFetch", "Events payload parsed", {
+                isArray: Array.isArray(events),
+                length: Array.isArray(events) ? events.length : -1
+            });
+            // #endregion
+            if (!Array.isArray(events)) {
+                throw new Error("GitHub events payload is not a list.");
+            }
+            const eventCommitData = processCommits(events);
+            if (Object.keys(eventCommitData).length === 0) {
+                if (commitStatus) {
+                    commitStatus.textContent = "No PushEvent data found. Trying repository commit history...";
+                }
+                return fetchCommitsFromRepos(username).then(repoCommitData => {
+                    if (Object.keys(repoCommitData).length === 0) {
+                        if (commitStatus) {
+                            commitStatus.textContent = "No recent commits found in public events or recent repositories.";
+                        }
+                        displayCommitsChart({});
+                        return;
+                    }
+                    if (commitStatus) {
+                        commitStatus.textContent = "Showing commits from repository history fallback.";
+                    }
+                    displayCommitsChart(repoCommitData);
+                });
+            }
+            displayCommitsChart(eventCommitData);
             generateHeatmap(events);
         })
         .catch(error => {
+            // #region agent log
+            agentDebugLog("H2", "result.js:eventsFetchCatch", "Events request failed", { error: String(error) });
+            // #endregion
             console.log("Error fetching events:", error);
+            if (commitStatus) {
+                commitStatus.textContent = "Unable to load commit chart. API may be rate-limited or unavailable.";
+            }
             // Fallback: show message
             document.getElementById("heatmap").innerHTML = '<p style="color: #94a3b8;">Limited contribution data available</p>';
         });
@@ -137,20 +207,82 @@ function displayLanguages(languages) {
 // Process commits - FIXED
 function processCommits(events) {
     const commitData = {};
+    let pushEventCount = 0;
+    let nonZeroCommitEvents = 0;
 
     events.forEach(event => {
         if (event.type === "PushEvent") {
+            pushEventCount++;
             const date = event.created_at.split("T")[0];
             const commitCount = event.payload?.commits?.length || 0;
 
             if (commitCount > 0) {
+                nonZeroCommitEvents++;
                 commitData[date] = (commitData[date] || 0) + commitCount;
             }
         }
     });
 
+    // #region agent log
+    agentDebugLog("H3", "result.js:processCommits", "Commit data aggregated", {
+        totalEvents: Array.isArray(events) ? events.length : -1,
+        pushEventCount,
+        nonZeroCommitEvents,
+        commitDays: Object.keys(commitData).length
+    });
+    // #endregion
+
     console.log("Commit data:", commitData);
-    displayCommitsChart(commitData);
+    return commitData;
+}
+
+async function fetchCommitsFromRepos(username) {
+    const commitData = {};
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - 90);
+    const sinceISO = sinceDate.toISOString();
+
+    try {
+        const repoResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=8`);
+        if (!repoResponse.ok) {
+            return commitData;
+        }
+
+        const repos = await repoResponse.json();
+        if (!Array.isArray(repos)) {
+            return commitData;
+        }
+
+        const recentRepos = repos.filter(repo => !repo.fork).slice(0, 6);
+
+        await Promise.all(recentRepos.map(async repo => {
+            try {
+                const commitsUrl = `https://api.github.com/repos/${repo.full_name}/commits?author=${username}&since=${encodeURIComponent(sinceISO)}&per_page=100`;
+                const commitResponse = await fetch(commitsUrl);
+                if (!commitResponse.ok) {
+                    return;
+                }
+
+                const commits = await commitResponse.json();
+                if (!Array.isArray(commits)) {
+                    return;
+                }
+
+                commits.forEach(commit => {
+                    const date = commit?.commit?.author?.date?.split("T")[0];
+                    if (date) {
+                        commitData[date] = (commitData[date] || 0) + 1;
+                    }
+                });
+            } catch (error) {
+                console.log("Repo commit fallback error:", error);
+            }
+        }));
+    } catch (error) {
+        console.log("Fallback repository fetch error:", error);
+    }
+
+    return commitData;
 }
 
 // Display commits chart - FIXED
@@ -162,10 +294,42 @@ function displayCommitsChart(commitData) {
     console.log("Chart data:", data);
 
     const ctx = document.getElementById("commitChart");
+    const chartAvailable = typeof Chart !== "undefined";
+
+    // #region agent log
+    agentDebugLog("H4", "result.js:displayCommitsChart", "Preparing chart render", {
+        labelsCount: labels.length,
+        dataCount: data.length,
+        hasCanvas: Boolean(ctx),
+        chartAvailable
+    });
+    // #endregion
     
     if (!ctx) {
         console.error("Canvas element not found!");
         return;
+    }
+
+    if (!chartAvailable) {
+        if (commitStatus) {
+            commitStatus.textContent = "Chart library failed to load. Check internet/CDN access.";
+        }
+        return;
+    }
+
+    if (labels.length === 0) {
+        if (commitStatus) {
+            commitStatus.textContent = "No recent commits found for chart data.";
+        }
+        if (chartInstance) {
+            chartInstance.destroy();
+            chartInstance = null;
+        }
+        return;
+    }
+
+    if (commitStatus) {
+        commitStatus.textContent = "";
     }
 
     // Destroy existing chart
@@ -173,75 +337,88 @@ function displayCommitsChart(commitData) {
         chartInstance.destroy();
     }
 
-    chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Commits",
-                data: data,
-                fill: true,
-                tension: 0.4,
-                backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                borderColor: '#3b82f6',
-                borderWidth: 2,
-                pointBackgroundColor: '#3b82f6',
-                pointBorderColor: '#fff',
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
+    try {
+        chartInstance = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Commits",
+                    data: data,
+                    fill: true,
+                    tension: 0.4,
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBorderWidth: 2
+                }]
             },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#f1f5f9',
-                        font: { size: 12 }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#f1f5f9',
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.8)',
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#cbd5e1',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        padding: 10
                     }
                 },
-                tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                    titleColor: '#f1f5f9',
-                    bodyColor: '#cbd5e1',
-                    borderColor: '#3b82f6',
-                    borderWidth: 1,
-                    padding: 10
-                }
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        color: '#94a3b8',
-                        font: { size: 11 }
+                scales: {
+                    y: {
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.1)',
+                            drawBorder: false
+                        },
+                        beginAtZero: true
                     },
-                    grid: {
-                        color: 'rgba(148, 163, 184, 0.1)',
-                        drawBorder: false
-                    },
-                    beginAtZero: true
-                },
-                x: {
-                    ticks: {
-                        color: '#94a3b8',
-                        font: { size: 11 },
-                        maxRotation: 45,
-                        minRotation: 0
-                    },
-                    grid: {
-                        display: false,
-                        drawBorder: false
+                    x: {
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 11 },
+                            maxRotation: 45,
+                            minRotation: 0
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
                     }
                 }
             }
+        });
+        // #region agent log
+        agentDebugLog("H5", "result.js:displayCommitsChart", "Chart instance created", { success: true, plottedPoints: data.length });
+        // #endregion
+    } catch (error) {
+        // #region agent log
+        agentDebugLog("H5", "result.js:displayCommitsChartCatch", "Chart creation failed", { error: String(error) });
+        // #endregion
+        if (commitStatus) {
+            commitStatus.textContent = "Chart failed to render due to a runtime error.";
         }
-    });
+        console.error(error);
+    }
 }
 
 // Generate heatmap - IMPROVED VERSION
