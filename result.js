@@ -93,25 +93,54 @@ function displayUserInfo(user) {
 // Display repos function
 function dispalyRepos(repos) {
     const repoContainer = document.querySelector('.repo');
-    repoContainer.innerHTML = '<h3>Repositories:</h3>';
-    repos.slice(0, 5).forEach(repo => {
+    if (!Array.isArray(repos) || repos.length === 0) {
+        repoContainer.innerHTML = '<h3>Repositories</h3><p>No repositories found.</p>';
+        return;
+    }
+
+    const sortedRepos = [...repos].sort((a, b) => {
+        const aActivity = new Date(a.pushed_at || a.updated_at || 0).getTime();
+        const bActivity = new Date(b.pushed_at || b.updated_at || 0).getTime();
+        return bActivity - aActivity;
+    });
+
+    repoContainer.innerHTML = `
+        <div class="repo-title-row">
+            <h3>Repositories</h3>
+            <span class="repo-total">${sortedRepos.length} total</span>
+        </div>
+        <div class="repo-list"></div>
+    `;
+
+    const repoList = repoContainer.querySelector('.repo-list');
+
+    sortedRepos.forEach((repo, index) => {
         const div = document.createElement('div');
+        div.className = 'repo-card';
+        const isFork = repo.fork;
+        const latestActivity = repo.pushed_at || repo.updated_at;
+        const activityText = latestActivity ? new Date(latestActivity).toLocaleDateString() : "N/A";
         div.innerHTML = `
     <div class="repo-header">
         <h4>${repo.name}</h4>
-        <span class="lang">${repo.language || "N/A"}</span>
+        <div class="repo-badges">
+            ${index === 0 ? '<span class="tag active-tag">Most Active</span>' : ''}
+            ${isFork ? '<span class="tag fork-tag">Forked</span>' : ''}
+            <span class="lang">${repo.language || "N/A"}</span>
+        </div>
     </div>
 
     <div class="repo-stats">
         ⭐ ${repo.stargazers_count}
         🍴 ${repo.forks_count}
     </div>
+    <div class="repo-activity">Last activity: ${activityText}</div>
 
     <a href="${repo.html_url}" target="_blank" class="repo-link">
         View Repo →
     </a>
 `;
-        repoContainer.appendChild(div);
+        repoList.appendChild(div);
     });
 }
 
