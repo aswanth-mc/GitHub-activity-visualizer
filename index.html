@@ -3,41 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>git-hub-visualizer</title>
+    <title>GitHub Activity Visualizer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="page-bg"></div>
     <header class="header">
-            <div class="logo">
-                <img src="" alt="hello" srcset="">
-                <span>git-hub-visualizer</span>
-            </div>
-            <nav class="nav">
-                <ul class="links">
-                    <li><a href="#">feature</a></li>
-                    <li><a href="#">preview</a></li>
-                </ul>
-                <button>Get Started</button>
-            </nav>
+        <div class="logo">GitHub Activity Visualizer</div>
+        <nav class="nav">
+            <ul class="links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#preview">Preview</a></li>
+            </ul>
+            <a class="primary-btn small" href="#get-started">Get Started</a>
+        </nav>
     </header>
-    <main class="main">
-        <div class="container">
-            <div class="left">
-                <h1 class="main_head">Visualize your GitHub activity and contributions</h1>
-                <p class="main_para">
-                    gain insights into your coding habits. <br>
-                    enter your github username and see all <br>
-                    activities in a beautiful,interactive charts
-                </p>
-                <input type="text" id="input" placeholder="Enter your GitHub username">
-                <button id="search-btn">search</button>
+
+    <main>
+        <section class="hero section">
+            <div class="container hero-grid">
+                <div class="left">
+                    <h1 class="main-head">Visualize Your GitHub Activity</h1>
+                    <p class="main-para">
+                        Gain insights into your coding habits. Enter your GitHub username and discover your activity
+                        in beautiful, interactive charts.
+                    </p>
+
+                    <div class="input-row" id="get-started">
+                        <input type="text" id="input" placeholder="Enter GitHub Username">
+                        <button id="search-btn" class="primary-btn">Analyze</button>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <article class="preview-card">
+                        <div class="panel profile-panel">
+                            <div class="avatar"></div>
+                            <div class="profile-text">
+                                <p>Public Repos: 8</p>
+                                <p>Total Stars: 1500</p>
+                                <p>Top Language: JavaScript</p>
+                            </div>
+                        </div>
+                        <div class="panel lang-panel">
+                            <h4>Languages Used</h4>
+                            <div class="bars">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <div class="panel commits-panel">
+                            <h4>Commits Over Time</h4>
+                            <div class="line-chart"></div>
+                        </div>
+                        <div class="panel contribution-panel">
+                            <h4>Contribution Activity</h4>
+                            <div class="heatmap-grid">
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </div>
-            <div class="right">
-                <img src="" alt="image  " srcset="">
+        </section>
+
+        <section class="section" id="features">
+            <div class="container">
+                <h2>Key Features</h2>
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <h3>Easy Analysis</h3>
+                        <p>Enter your GitHub username and instantly view profile insights.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>Interactive Charts</h3>
+                        <p>Visualize commits, languages, and activity trends over time.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>Contribution Heatmap</h3>
+                        <p>Track your contributions with a GitHub-style activity heatmap.</p>
+                    </article>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <section class="section preview-section" id="preview">
+            <div class="container">
+                <h2>Preview</h2>
+                <p class="subtitle">See Your Coding Journey at a Glance</p>
+                <div class="preview-copy-card"></div>
+            </div>
+        </section>
+
+        <section class="section cta-section">
+            <div class="container center">
+                <h2>Get Started Now!</h2>
+                <p>Enter your GitHub username and discover your coding activity.</p>
+                <a class="primary-btn" href="#get-started">Start Analyzing</a>
+            </div>
+        </section>
     </main>
-  
-       <script src="script.js"></script>
+
+    <footer class="footer">
+        <p>Built with love by You</p>
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
