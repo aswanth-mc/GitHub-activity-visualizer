@@ -301,9 +301,23 @@ h2 {
     margin: 0 auto;
     border-radius: 16px;
     min-height: 260px;
+    padding: 22px;
     background: linear-gradient(160deg, rgba(24, 41, 97, 0.8), rgba(17, 31, 75, 0.9));
     border: 1px solid rgba(149, 172, 247, 0.24);
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-copy-card img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    border-radius: 14px;
+    object-fit: contain;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
 }
 
 .preview-copy-card::before {
