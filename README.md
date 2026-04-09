@@ -6,7 +6,7 @@ A modern web dashboard to visualize GitHub user activity including profile detai
 
 ## 🌐 Live Demo
 
-👉 [[https://aswanth-mc.github.io/GitHub-activity-visualizer/]](#)
+👉 [https://aswanth-mc.github.io/GitHub-activity-visualizer/](#)
 
 
 ---
