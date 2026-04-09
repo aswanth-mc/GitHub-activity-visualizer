@@ -79,6 +79,8 @@ if (!username) {
             if (!Array.isArray(events)) {
                 throw new Error("GitHub events payload is not a list.");
             }
+            generateHeatmap(events);
+
             const eventCommitData = processCommits(events);
             if (Object.keys(eventCommitData).length === 0) {
                 if (commitStatus) {
@@ -90,16 +92,17 @@ if (!username) {
                             commitStatus.textContent = "No recent commits found in public events or recent repositories.";
                         }
                         displayCommitsChart({});
+                        renderHeatmap(buildHeatmapDataFromCommitData({}));
                         return;
                     }
                     if (commitStatus) {
                         commitStatus.textContent = "Showing commits from repository history fallback.";
                     }
                     displayCommitsChart(repoCommitData);
+                    renderHeatmap(buildHeatmapDataFromCommitData(repoCommitData));
                 });
             }
             displayCommitsChart(eventCommitData);
-            generateHeatmap(events);
         })
         .catch(error => {
             // #region agent log
@@ -110,7 +113,8 @@ if (!username) {
                 commitStatus.textContent = "Unable to load commit chart. API may be rate-limited or unavailable.";
             }
             // Fallback: show message
-            document.getElementById("heatmap").innerHTML = '<p style="color: #94a3b8;">Limited contribution data available</p>';
+            const fallbackMap = buildHeatmapDataFromCommitData({});
+            renderHeatmap(fallbackMap);
         });
 }
 
@@ -460,6 +464,20 @@ function generateHeatmap(events) {
 
     console.log("Date map:", dateMap);
     renderHeatmap(dateMap);
+}
+
+function buildHeatmapDataFromCommitData(commitData) {
+    const dateMap = {};
+    const today = new Date();
+
+    for (let i = 89; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        dateMap[dateStr] = commitData[dateStr] || 0;
+    }
+
+    return dateMap;
 }
 
 function renderHeatmap(data) {
