@@ -3,38 +3,11 @@ const username = params.get('user');
 let chartInstance = null;
 
 const profile = document.querySelector('.profile');
-const DEBUG_RUN_ID = "pre-fix-1";
 const commitStatus = document.getElementById("commit-status");
 
-function agentDebugLog(hypothesisId, location, message, data) {
-    fetch('http://127.0.0.1:7820/ingest/93c9ab97-3b4f-46db-90c4-c867da140acb', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'bfbe73'
-        },
-        body: JSON.stringify({
-            sessionId: 'bfbe73',
-            runId: DEBUG_RUN_ID,
-            hypothesisId,
-            location,
-            message,
-            data,
-            timestamp: Date.now()
-        })
-    }).catch(() => { });
-}
-
 if (!username) {
-    // #region agent log
-    agentDebugLog("H1", "result.js:startup", "Missing username in URL", { hasUsername: false });
-    // #endregion
     profile.innerHTML = 'No username provided in the URL.';
 } else {
-    // #region agent log
-    agentDebugLog("H1", "result.js:startup", "Username detected", { hasUsername: true, usernameLength: username.length });
-    // #endregion
-
     // Fetch user data from GitHub API
     fetch(`https://api.github.com/users/${username}`)
         .then(response => {
@@ -61,21 +34,12 @@ if (!username) {
     // Fetch events with better handling
     fetch(`https://api.github.com/users/${username}/events/public?per_page=300`)
         .then(res => {
-            // #region agent log
-            agentDebugLog("H2", "result.js:eventsFetch", "Events response received", { ok: res.ok, status: res.status });
-            // #endregion
             if (!res.ok) {
                 throw new Error(`GitHub events API error (${res.status}). You may be rate-limited.`);
             }
             return res.json();
         })
         .then(events => {
-            // #region agent log
-            agentDebugLog("H2", "result.js:eventsFetch", "Events payload parsed", {
-                isArray: Array.isArray(events),
-                length: Array.isArray(events) ? events.length : -1
-            });
-            // #endregion
             if (!Array.isArray(events)) {
                 throw new Error("GitHub events payload is not a list.");
             }
@@ -105,9 +69,6 @@ if (!username) {
             displayCommitsChart(eventCommitData);
         })
         .catch(error => {
-            // #region agent log
-            agentDebugLog("H2", "result.js:eventsFetchCatch", "Events request failed", { error: String(error) });
-            // #endregion
             console.log("Error fetching events:", error);
             if (commitStatus) {
                 commitStatus.textContent = "Unable to load commit chart. API may be rate-limited or unavailable.";
@@ -211,30 +172,17 @@ function displayLanguages(languages) {
 // Process commits - FIXED
 function processCommits(events) {
     const commitData = {};
-    let pushEventCount = 0;
-    let nonZeroCommitEvents = 0;
 
     events.forEach(event => {
         if (event.type === "PushEvent") {
-            pushEventCount++;
             const date = event.created_at.split("T")[0];
             const commitCount = event.payload?.commits?.length || 0;
 
             if (commitCount > 0) {
-                nonZeroCommitEvents++;
                 commitData[date] = (commitData[date] || 0) + commitCount;
             }
         }
     });
-
-    // #region agent log
-    agentDebugLog("H3", "result.js:processCommits", "Commit data aggregated", {
-        totalEvents: Array.isArray(events) ? events.length : -1,
-        pushEventCount,
-        nonZeroCommitEvents,
-        commitDays: Object.keys(commitData).length
-    });
-    // #endregion
 
     console.log("Commit data:", commitData);
     return commitData;
@@ -299,15 +247,6 @@ function displayCommitsChart(commitData) {
 
     const ctx = document.getElementById("commitChart");
     const chartAvailable = typeof Chart !== "undefined";
-
-    // #region agent log
-    agentDebugLog("H4", "result.js:displayCommitsChart", "Preparing chart render", {
-        labelsCount: labels.length,
-        dataCount: data.length,
-        hasCanvas: Boolean(ctx),
-        chartAvailable
-    });
-    // #endregion
     
     if (!ctx) {
         console.error("Canvas element not found!");
@@ -411,13 +350,7 @@ function displayCommitsChart(commitData) {
                 }
             }
         });
-        // #region agent log
-        agentDebugLog("H5", "result.js:displayCommitsChart", "Chart instance created", { success: true, plottedPoints: data.length });
-        // #endregion
     } catch (error) {
-        // #region agent log
-        agentDebugLog("H5", "result.js:displayCommitsChartCatch", "Chart creation failed", { error: String(error) });
-        // #endregion
         if (commitStatus) {
             commitStatus.textContent = "Chart failed to render due to a runtime error.";
         }
