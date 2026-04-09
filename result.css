@@ -236,6 +236,13 @@ body {
   height: 310px;
 }
 
+.commit-status {
+  margin: 0 0 10px;
+  color: #c8d5fb;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
 #heatmap {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
