@@ -141,22 +141,52 @@ body {
   padding: 18px;
 }
 
+.repo-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
 .repo h3 {
   margin: 0;
 }
 
-.repo div {
+.repo-total {
+  font-size: 0.8rem;
+  color: #c6d4f6;
+}
+
+.repo-list {
+  margin-top: 12px;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: grid;
+  gap: 12px;
+}
+
+.repo-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.repo-list::-webkit-scrollbar-thumb {
+  background: rgba(143, 190, 255, 0.35);
+  border-radius: 999px;
+}
+
+.repo-card {
   background: rgba(8, 16, 46, 0.55);
   border: 1px solid rgba(132, 158, 235, 0.2);
   border-radius: 10px;
   padding: 14px;
-  margin-top: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.repo div:hover {
-  transform: translateY(-2px);
+.repo-card:hover {
+  transform: translateX(4px) translateY(-2px);
   box-shadow: 0 8px 18px rgba(11, 19, 49, 0.5);
+  border-color: rgba(173, 195, 255, 0.45);
 }
 
 .repo-header {
@@ -170,6 +200,14 @@ body {
   margin: 0;
 }
 
+.repo-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .lang {
   font-size: 12px;
   padding: 3px 8px;
@@ -178,10 +216,34 @@ body {
   color: #eaf0ff;
 }
 
+.tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.active-tag {
+  color: #06111f;
+  background: linear-gradient(135deg, #7dd3fc, #a7f3d0);
+}
+
+.fork-tag {
+  color: #dbeafe;
+  background: rgba(96, 165, 250, 0.22);
+  border: 1px solid rgba(147, 197, 253, 0.45);
+}
+
 .repo-stats {
   margin: 10px 0;
   font-size: 0.92rem;
   color: #ccd8fa;
+}
+
+.repo-activity {
+  font-size: 0.82rem;
+  color: #aec1f0;
+  margin: -2px 0 10px;
 }
 
 .repo-link {
