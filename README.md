@@ -84,7 +84,7 @@ project/
 Clone the repository:
 
 ```
-git clone https://github.com/your-username/github-activity-visualizer.git
+git clone https://github.com/aswanth-mc/Github-activity-visualizer.git
 ```
 
 Open `index.html` in your browser.
