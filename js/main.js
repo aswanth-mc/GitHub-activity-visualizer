@@ -9,5 +9,5 @@ searchBtn.addEventListener('click',()=>{
         return;
     }
 
-    window.location.href = `result.html?user=${username}`;
+    window.location.href = `dashboard.html?user=${username}`;
 })
