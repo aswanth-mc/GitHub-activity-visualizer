@@ -327,6 +327,54 @@ body {
 .cell:hover {
   transform: scale(1.2);
 }
+/* CARD BASE */
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* STREAK CARD */
+.streak-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.streak-header h1 {
+  font-size: 36px;
+  margin-bottom: 5px;
+}
+
+.streak-header p {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.streak-card hr {
+  border: 0.5px solid rgba(255,255,255,0.1);
+  margin: 15px 0;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stats-row div {
+  text-align: center;
+}
+
+.stats-row span {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.stats-row p {
+  font-size: 12px;
+  color: #94a3b8;
+}
 
 @media (max-width: 1024px) {
   .dashboard {
