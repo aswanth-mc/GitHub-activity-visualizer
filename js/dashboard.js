@@ -29,6 +29,7 @@ if (!username) {
         .then(repos => {
             dispalyRepos(repos);
             calculateLanguage(repos);
+            calculateStats(repos);
         });
 
     // Fetch events with better handling
@@ -43,7 +44,9 @@ if (!username) {
             if (!Array.isArray(events)) {
                 throw new Error("GitHub events payload is not a list.");
             }
+            processCommits(events);
             generateHeatmap(events);
+            calculateWeeklyCommits(events);
 
             const eventCommitData = processCommits(events);
             if (Object.keys(eventCommitData).length === 0) {
@@ -485,4 +488,36 @@ function renderHeatmap(data) {
 
         container.appendChild(cell);
     });
+}
+
+function calculateStats(repos) {
+    let totalStars = 0;
+    let totalForks = 0;
+
+    repos.forEach(repo => {
+        totalStars += repo.stargazers_count;
+        totalForks += repo.forks_count;
+    });
+
+    document.getElementById("stars").textContent = totalStars;
+    document.getElementById("forks").textContent = totalForks;
+}
+function calculateWeeklyCommits(events) {
+    let count = 0;
+
+    const today = new Date();
+    const lastWeek = new Date();
+    lastWeek.setDate(today.getDate() - 7);
+
+    events.forEach(event => {
+        if (event.type === "PushEvent") {
+            const eventDate = new Date(event.created_at);
+
+            if (eventDate >= lastWeek) {
+                count += event.payload?.commits?.length || 0;
+            }
+        }
+    });
+
+    document.getElementById("total").textContent = count;
 }
