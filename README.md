@@ -71,9 +71,13 @@ A modern web dashboard to visualize GitHub user activity including profile detai
 ```
 project/
 │── index.html
-│── result.html
-│── style.css
-│── result.js
+│── dashboard.html
+│── css
+    |── main.css
+    |── dashboard.css
+│── js
+    |── main.js
+    |── dashboard.js
 │── assets/
 ```
 
