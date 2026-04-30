@@ -1,9 +1,6 @@
+/* RESET */
 * {
   box-sizing: border-box;
-}
-
-html,
-body {
   margin: 0;
   padding: 0;
 }
@@ -11,385 +8,203 @@ body {
 body {
   font-family: "Segoe UI", Arial, sans-serif;
   color: #eaf0ff;
-  background: radial-gradient(circle at 15% 10%, #1f4394 0%, #102764 35%, #0b1536 72%, #080f29 100%);
+  background: linear-gradient(135deg, #0b1536, #102764);
   min-height: 100vh;
-  position: relative;
 }
 
-.page-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 85% 30%, rgba(71, 140, 255, 0.18), transparent 40%),
-    radial-gradient(circle at 10% 80%, rgba(89, 194, 255, 0.1), transparent 45%);
-}
-
-.topbar {
-  width: min(1160px, 92%);
-  margin: 0 auto;
-  padding: 22px 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 2;
-}
-
-.topbar h1 {
-  margin: 0;
-  font-size: clamp(1.3rem, 2.8vw, 2rem);
-}
-
-.back-link {
-  text-decoration: none;
-  color: #dce6ff;
-  border: 1px solid rgba(196, 211, 255, 0.3);
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 8px 14px;
-}
-
-.back-link:hover {
-  color: #fff;
-  border-color: rgba(230, 238, 255, 0.5);
-}
-
+/* LAYOUT */
 .dashboard-wrap {
-  position: relative;
-  z-index: 2;
-  width: min(1160px, 92%);
-  margin: 0 auto;
-  padding: 12px 0 30px;
+  width: min(1150px, 92%);
+  margin: auto;
+  padding: 20px 0;
 }
 
 .dashboard {
   display: grid;
-  grid-template-columns: 330px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 18px;
 }
 
+/* PANELS */
 .left-panel,
 .right-panel {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
 }
 
+/* CARD */
 .card {
-  background: linear-gradient(160deg, rgba(24, 41, 97, 0.8), rgba(17, 31, 75, 0.9));
-  border: 1px solid rgba(149, 172, 247, 0.24);
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(5, 10, 35, 0.4);
+  background: rgba(17, 31, 75, 0.9);
+  border: 1px solid rgba(149, 172, 247, 0.2);
+  border-radius: 12px;
+  padding: 18px;
 }
 
+/* PROFILE */
 .profile {
-  padding: 22px 18px;
   text-align: center;
 }
 
 .profile img {
-  width: 110px;
-  height: 110px;
-  border-radius: 16px;
-  border: 2px solid rgba(194, 210, 255, 0.4);
-  object-fit: cover;
-  background: rgba(255, 255, 255, 0.12);
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  margin-bottom: 10px;
 }
 
 #name {
-  margin: 12px 0 4px;
-  font-size: 1.35rem;
+  font-size: 1.3rem;
 }
 
 #username {
-  margin: 0;
-  color: #c6d4f6;
+  color: #9fb3ff;
+  font-size: 0.9rem;
 }
 
 #bio {
-  margin: 10px 0 0;
-  color: #d8e2ff;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #cbd5ff;
 }
 
+/* STATS */
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 15px;
   gap: 8px;
-  margin-top: 16px;
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(170, 192, 249, 0.2);
-  border-radius: 10px;
-  padding: 10px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
 }
 
 .stat h3 {
-  margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
-.stat p {
-  margin: 6px 0 0;
-  color: #c6d4f6;
-  font-size: 0.78rem;
-}
-
-.repo {
-  padding: 18px;
-}
-
-.repo-title-row {
+/* REPO */
+.repo-list {
+  max-height: 500px;
+  overflow-y: auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
 }
 
-.repo h3 {
-  margin: 0;
-}
-
-.repo-total {
-  font-size: 0.8rem;
-  color: #c6d4f6;
-}
-
-.repo-list {
-  margin-top: 12px;
-  max-height: 560px;
-  overflow-y: auto;
-  padding-right: 4px;
-  display: grid;
-  gap: 12px;
-}
-
-.repo-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.repo-list::-webkit-scrollbar-thumb {
-  background: rgba(143, 190, 255, 0.35);
-  border-radius: 999px;
-}
-
 .repo-card {
-  background: rgba(8, 16, 46, 0.55);
-  border: 1px solid rgba(132, 158, 235, 0.2);
-  border-radius: 10px;
-  padding: 14px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.repo-card:hover {
-  transform: translateX(4px) translateY(-2px);
-  box-shadow: 0 8px 18px rgba(11, 19, 49, 0.5);
-  border-color: rgba(173, 195, 255, 0.45);
+  background: rgba(8, 16, 46, 0.6);
+  padding: 12px;
+  border-radius: 8px;
 }
 
 .repo-header {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  align-items: center;
-}
-
-.repo-header h4 {
-  margin: 0;
-}
-
-.repo-badges {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.lang {
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #eaf0ff;
-}
-
-.tag {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-weight: 600;
-}
-
-.active-tag {
-  color: #06111f;
-  background: linear-gradient(135deg, #7dd3fc, #a7f3d0);
-}
-
-.fork-tag {
-  color: #dbeafe;
-  background: rgba(96, 165, 250, 0.22);
-  border: 1px solid rgba(147, 197, 253, 0.45);
 }
 
 .repo-stats {
-  margin: 10px 0;
-  font-size: 0.92rem;
-  color: #ccd8fa;
-}
-
-.repo-activity {
-  font-size: 0.82rem;
-  color: #aec1f0;
-  margin: -2px 0 10px;
+  font-size: 0.85rem;
+  margin: 6px 0;
 }
 
 .repo-link {
-  color: #8fbeff;
-  text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  color: #7aa2ff;
 }
 
-.repo-link:hover {
-  text-decoration: underline;
-}
-
-.languages,
-.commits,
-.contribution {
-  padding: 18px;
-}
-
-.languages h3,
-.commits h3,
-.contribution h3 {
-  margin: 0 0 14px;
-}
-
+/* LANGUAGES */
 .language-item {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .language-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.93rem;
-  margin-bottom: 6px;
+  font-size: 0.9rem;
 }
 
 .lang-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  overflow: hidden;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
 }
 
 .lang-fill {
   height: 100%;
-  border-radius: 999px;
-  transition: width 0.4s ease;
+  border-radius: 10px;
 }
 
+/* CHART */
 .chart-container {
-  position: relative;
-  height: 310px;
+  height: 280px;
 }
 
-.commit-status {
-  margin: 0 0 10px;
-  color: #c8d5fb;
-  font-size: 0.9rem;
-  min-height: 20px;
-}
-
+/* HEATMAP */
 #heatmap {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+  grid-template-columns: repeat(auto-fill, 18px);
   gap: 4px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(5, 13, 38, 0.45);
-  border: 1px solid rgba(138, 162, 237, 0.2);
-  min-height: 130px;
+  margin-top: 10px;
 }
 
 .cell {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 3px;
-  cursor: pointer;
-  transition: transform 0.15s ease;
 }
 
-.cell:hover {
-  transform: scale(1.2);
-}
-/* CARD BASE */
-.card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-/* STREAK CARD */
+/* ===== STREAK CARD FIX ===== */
 .streak-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(10, 20, 50, 0.9);
+  border-radius: 10px;
   text-align: center;
 }
 
+/* NUMBER */
 .streak-header h1 {
-  font-size: 36px;
-  margin-bottom: 5px;
+  font-size: 32px;
+  font-weight: bold;
 }
 
+/* LABEL */
 .streak-header p {
-  font-size: 14px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #9fb3ff;
 }
 
+/* DIVIDER */
 .streak-card hr {
-  border: 0.5px solid rgba(255,255,255,0.1);
-  margin: 15px 0;
+  margin: 12px 0;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
+/* STATS ROW */
 .stats-row {
   display: flex;
   justify-content: space-around;
 }
 
-.stats-row div {
-  text-align: center;
-}
-
 .stats-row span {
-  font-size: 18px;
   font-weight: bold;
 }
 
-.stats-row p {
-  font-size: 12px;
-  color: #94a3b8;
+/* FIX ALIGNMENT ISSUE */
+.contribution {
+  display: flex;
+  flex-direction: column;
 }
 
-@media (max-width: 1024px) {
+/* RESPONSIVE */
+@media (max-width: 900px) {
   .dashboard {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .stats {
     grid-template-columns: 1fr;
   }
 }
