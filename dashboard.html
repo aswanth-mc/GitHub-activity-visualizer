@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Activity Dashboard</title>
+
     <link rel="stylesheet" href="./css/dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="icon" type="image/x-icon" href="./assets/image/icons/fevicon.png">
+
+    <link rel="icon" href="./assets/image/icons/fevicon.png">
 </head>
+
 <body>
-    <div class="page-bg"></div>
 
     <header class="topbar">
         <a href="index.html" class="back-link">Back</a>
@@ -18,12 +20,15 @@
 
     <main class="dashboard-wrap">
         <section class="dashboard">
+
+            <!-- LEFT PANEL -->
             <div class="left-panel">
                 <div class="card profile">
                     <img id="avatar" alt="avatar">
                     <h2 id="name"></h2>
                     <p id="username"></p>
                     <p id="bio"></p>
+
                     <div class="stats">
                         <div class="stat">
                             <h3 id="repo"></h3>
@@ -42,15 +47,19 @@
                     </div>
                 </div>
 
-                <div class="card repo">repo</div>
+                <div class="card repo"></div>
             </div>
 
+            <!-- RIGHT PANEL -->
             <div class="right-panel">
+
+                <!-- LANGUAGES -->
                 <div class="card languages">
                     <h3>Languages Used</h3>
                     <div id="language-list"></div>
                 </div>
 
+                <!-- COMMITS -->
                 <div class="card commits">
                     <h3>Commits Over Time</h3>
                     <p id="commit-status" class="commit-status"></p>
@@ -59,35 +68,45 @@
                     </div>
                 </div>
 
-                <div class="card contribution">
-                    <h3>Contribution Activity</h3>
-                    <div id="heatmap"></div>
-                     <!-- Streak / Stats Card -->
-    <div class="streak-card card">
-        <div class="streak-header">
-            <h1 id="total">0</h1>
-            <p>contributions this week</p>
-        </div>
+                <!-- HEATMAP + STREAK -->
+                <div class="heatmap-row">
 
-        <hr>
+                    <!-- HEATMAP -->
+                    <div class="card contribution">
+                        <h3>Contribution Activity</h3>
+                        <div id="heatmap"></div>
+                    </div>
 
-        <div class="stats-row">
-            <div>
-                ⭐ <span id="stars">0</span>
-                <p>Stars</p>
-            </div>
+                    <!-- STREAK -->
+                    <div class="card streak-card">
+                        <div class="streak-header">
+                            <h1 id="streak">0</h1>
+                            <p>Current Streak</p>
+                        </div>
 
-            <div>
-                🍴 <span id="forks">0</span>
-                <p>Forks</p>
-            </div>
-        </div>
-    </div>
+                        <hr>
+
+                        <div class="stats-row">
+                            <div>
+                                ⭐ <span id="stars">0</span>
+                                <p>Stars</p>
+                            </div>
+
+                            <div>
+                                🍴 <span id="forks">0</span>
+                                <p>Forks</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
+
         </section>
     </main>
 
     <script src="./js/dashboard.js"></script>
+
 </body>
 </html>
