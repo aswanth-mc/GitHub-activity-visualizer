@@ -57,21 +57,23 @@ body {
 .dashboard-wrap {
   position: relative;
   z-index: 2;
-  width: min(1160px, 92%);
+  width: min(1200px, 92%);
   margin: 0 auto;
-  padding: 12px 0 30px;
+  padding: 12px 0 36px;
 }
 
 .dashboard {
   display: grid;
-  grid-template-columns: 330px 1fr;
-  gap: 18px;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
 }
 
 .left-panel,
 .right-panel {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .card {
@@ -79,66 +81,82 @@ body {
   border: 1px solid rgba(149, 172, 247, 0.24);
   border-radius: 14px;
   box-shadow: 0 12px 30px rgba(5, 10, 35, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 .profile {
-  padding: 22px 18px;
+  padding: 24px 20px;
   text-align: center;
 }
 
 .profile img {
   width: 110px;
   height: 110px;
-  border-radius: 16px;
+  border-radius: 20px;
   border: 2px solid rgba(194, 210, 255, 0.4);
   object-fit: cover;
   background: rgba(255, 255, 255, 0.12);
+  display: inline-block;
+}
+
+.profile img:not([src]),
+.profile img[src=""] {
+  visibility: hidden;
 }
 
 #name {
-  margin: 12px 0 4px;
+  margin: 14px 0 4px;
   font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 #username {
   margin: 0;
-  color: #c6d4f6;
+  color: #8fbeff;
+  font-size: 0.95rem;
 }
 
 #bio {
-  margin: 10px 0 0;
-  color: #d8e2ff;
-  font-size: 0.95rem;
+  margin: 12px 0 0;
+  color: #cdd9f8;
+  font-size: 0.92rem;
   line-height: 1.5;
+  word-break: break-word;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 .stat {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(170, 192, 249, 0.2);
   border-radius: 10px;
-  padding: 10px 8px;
+  padding: 10px 6px;
+  text-align: center;
 }
 
 .stat h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  color: #ffffff;
 }
 
 .stat p {
-  margin: 6px 0 0;
-  color: #c6d4f6;
-  font-size: 0.78rem;
+  margin: 4px 0 0;
+  color: #a5bbf0;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .repo {
-  padding: 18px;
+  padding: 20px;
 }
 
 .repo-title-row {
@@ -155,14 +173,16 @@ body {
 .repo-total {
   font-size: 0.8rem;
   color: #c6d4f6;
+  font-weight: 500;
 }
 
 .repo-list {
-  margin-top: 12px;
-  max-height: 560px;
+  margin-top: 14px;
+  max-height: 480px;
   overflow-y: auto;
-  padding-right: 4px;
-  display: grid;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
@@ -259,30 +279,38 @@ body {
 .languages,
 .commits,
 .contribution {
-  padding: 18px;
+  padding: 20px;
 }
 
 .languages h3,
 .commits h3,
 .contribution h3 {
   margin: 0 0 14px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .language-item {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+}
+
+.language-item:last-child {
+  margin-bottom: 0;
 }
 
 .language-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.93rem;
+  align-items: center;
+  font-size: 0.9rem;
   margin-bottom: 6px;
 }
 
 .lang-bar {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -295,53 +323,98 @@ body {
 
 .chart-container {
   position: relative;
-  height: 310px;
+  height: 280px;
+  width: 100%;
 }
 
 .commit-status {
-  margin: 0 0 10px;
+  margin: 0;
   color: #c8d5fb;
-  font-size: 0.9rem;
-  min-height: 20px;
+  font-size: 0.88rem;
+}
+
+.commit-status:not(:empty) {
+  margin-bottom: 12px;
 }
 
 #heatmap {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
-  gap: 4px;
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
   background: rgba(5, 13, 38, 0.45);
   border: 1px solid rgba(138, 162, 237, 0.2);
-  min-height: 130px;
+}
+
+.heatmap-info {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18px, 1fr));
+  gap: 5px;
 }
 
 .cell {
-  width: 20px;
-  height: 20px;
+  aspect-ratio: 1;
+  width: 100%;
   border-radius: 3px;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .cell:hover {
-  transform: scale(1.2);
+  transform: scale(1.25);
+  z-index: 2;
+  filter: brightness(1.25);
 }
 
 @media (max-width: 1024px) {
   .dashboard {
     grid-template-columns: 1fr;
   }
+
+  .repo-list {
+    max-height: 400px;
+  }
 }
 
 @media (max-width: 640px) {
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 16px 0 10px;
   }
 
+  .topbar h1 {
+    font-size: 1.25rem;
+  }
+
+  .card {
+    border-radius: 12px;
+  }
+
+  .languages,
+  .commits,
+  .contribution,
+  .repo,
+  .profile {
+    padding: 16px;
+  }
+
+  .chart-container {
+    height: 240px;
+  }
+}
+
+@media (max-width: 480px) {
   .stats {
     grid-template-columns: 1fr;
+  }
+
+  .heatmap-grid {
+    grid-template-columns: repeat(auto-fill, minmax(14px, 1fr));
+    gap: 3px;
   }
 }

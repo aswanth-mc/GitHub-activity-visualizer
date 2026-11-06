@@ -5,40 +5,70 @@ let chartInstance = null;
 const profile = document.querySelector('.profile');
 const commitStatus = document.getElementById("commit-status");
 
+async function fetchGitHubJson(url) {
+    const response = await fetch(url);
+    let data;
+
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
+    }
+
+    if (!response.ok) {
+        const error = new Error(data?.message || `GitHub API request failed (${response.status}).`);
+        error.status = response.status;
+        error.rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+        error.rateLimitReset = response.headers.get('x-ratelimit-reset');
+        throw error;
+    }
+
+    return data;
+}
+
+function describeApiError(error) {
+    if (error.status === 403 && error.rateLimitRemaining === '0') {
+        const resetTime = error.rateLimitReset
+            ? ` Try again after ${new Date(Number(error.rateLimitReset) * 1000).toLocaleTimeString()}.`
+            : '';
+        return `GitHub API rate limit reached.${resetTime} ${error.message}`;
+    }
+
+    return error.status === 403
+        ? `GitHub API access denied (403). ${error.message}`
+        : error.message;
+}
+
 if (!username) {
     profile.innerHTML = 'No username provided in the URL.';
 } else {
     // Fetch user data from GitHub API
-    fetch(`https://api.github.com/users/${username}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('user not found');
-            }
-            return response.json();
-        })
+    fetchGitHubJson(`https://api.github.com/users/${encodeURIComponent(username)}`)
         .then(user => {
             displayUserInfo(user);
         })
         .catch(error => {
-            profile.innerHTML = error.message;
+            profile.textContent = `Could not load profile: ${describeApiError(error)}`;
         });
 
     // Fetch user repositories
-    fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
-        .then(res => res.json())
+    fetchGitHubJson(`https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100`)
         .then(repos => {
+            if (!Array.isArray(repos)) {
+                throw new Error('GitHub returned an unexpected repositories response.');
+            }
             dispalyRepos(repos);
             calculateLanguage(repos);
+        })
+        .catch(error => {
+            const repoContainer = document.querySelector('.repo');
+            repoContainer.innerHTML = '<h3>Repositories</h3><p></p>';
+            repoContainer.querySelector('p').textContent = `Could not load repositories: ${describeApiError(error)}`;
+            document.getElementById('language-list').textContent = 'Languages are unavailable.';
         });
 
     // Fetch events with better handling
-    fetch(`https://api.github.com/users/${username}/events/public?per_page=300`)
-        .then(res => {
-            if (!res.ok) {
-                throw new Error(`GitHub events API error (${res.status}). You may be rate-limited.`);
-            }
-            return res.json();
-        })
+    fetchGitHubJson(`https://api.github.com/users/${encodeURIComponent(username)}/events/public?per_page=300`)
         .then(events => {
             if (!Array.isArray(events)) {
                 throw new Error("GitHub events payload is not a list.");
@@ -69,11 +99,10 @@ if (!username) {
             displayCommitsChart(eventCommitData);
         })
         .catch(error => {
-            console.log("Error fetching events:", error);
+            console.warn("Error fetching events:", error);
             if (commitStatus) {
-                commitStatus.textContent = "Unable to load commit chart. API may be rate-limited or unavailable.";
+                commitStatus.textContent = `Unable to load commit chart: ${describeApiError(error)}`;
             }
-            // Fallback: show message
             const fallbackMap = buildHeatmapDataFromCommitData({});
             renderHeatmap(fallbackMap);
         });
@@ -167,28 +196,44 @@ function displayLanguages(languages) {
 
     const total = Object.values(languages).reduce((a, b) => a + b, 0);
 
+    if (total === 0) {
+        container.innerHTML = '<p style="color: #94a3b8; font-size: 0.88rem; margin: 0;">No language data available.</p>';
+        return;
+    }
+
     const colors = {
         "JavaScript": "#f1e05a",
+        "TypeScript": "#3178c6",
         "Python": "#3572A5",
         "Java": "#b07219",
         "HTML": "#e34c26",
         "CSS": "#563d7c",
-        "TypeScript": "#3178c6",
+        "C": "#555555",
+        "C++": "#f34b7d",
+        "C#": "#178600",
         "Go": "#00add8",
-        "Rust": "#ce422b",
-        "PHP": "#777bb4",
-        "default": "#f34b7d",
+        "Rust": "#dea584",
+        "PHP": "#4F5D95",
+        "Ruby": "#701516",
+        "Swift": "#F05138",
+        "Kotlin": "#A97BFF",
+        "Shell": "#89e051",
+        "Vue": "#41b883",
+        "default": "#38bdf8",
     };
     
-    Object.entries(languages).forEach(([lang, count]) => {
-        const percentage = ((count / total) * 100).toFixed(2);
+    // Sort languages descending by count
+    const sortedLanguages = Object.entries(languages).sort((a, b) => b[1] - a[1]);
+
+    sortedLanguages.forEach(([lang, count]) => {
+        const percentage = ((count / total) * 100).toFixed(1);
         const color = colors[lang] || colors["default"];
         const div = document.createElement("div");
         div.classList.add("language-item");
         div.innerHTML = `
         <div class="language-header">
             <span>${lang}</span>
-            <span style="background: linear-gradient(135deg, ${color}, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 600;">${percentage}%</span>
+            <span style="color: ${color}; font-weight: 600;">${percentage}%</span>
         </div>
         <div class="lang-bar">
             <div class="lang-fill" style="width:${percentage}%; background:${color}"></div>
@@ -457,9 +502,13 @@ function renderHeatmap(data) {
 
     // Add total contributions info
     const infoDiv = document.createElement("div");
-    infoDiv.style.cssText = "grid-column: 1/-1; color: #94a3b8; font-size: 12px; margin-bottom: 10px;";
+    infoDiv.className = "heatmap-info";
     infoDiv.textContent = `Total contributions (last 90 days): ${totalContributions}`;
     container.appendChild(infoDiv);
+
+    // Grid container for cells
+    const gridDiv = document.createElement("div");
+    gridDiv.className = "heatmap-grid";
 
     dates.forEach(date => {
         const count = data[date];
@@ -467,22 +516,27 @@ function renderHeatmap(data) {
         cell.classList.add("cell");
 
         // Add tooltip
-        cell.title = `${date}: ${count} contributions`;
+        cell.title = `${date}: ${count} contribution${count === 1 ? '' : 's'}`;
 
         // Color based on intensity
-        if (count === 0) {
-            cell.style.background = "#0f172a";
-            cell.style.opacity = "0.3";
-        } else if (count > maxCount * 0.75) {
-            cell.style.background = "#22c55e";
-        } else if (count > maxCount * 0.5) {
-            cell.style.background = "#4ade80";
-        } else if (count > maxCount * 0.25) {
-            cell.style.background = "#86efac";
-        } else {
-            cell.style.background = "#dcfce7";
+        if (count > 0) {
+            if (count > maxCount * 0.75) {
+                cell.style.background = "#22c55e";
+                cell.style.borderColor = "rgba(34, 197, 94, 0.4)";
+            } else if (count > maxCount * 0.5) {
+                cell.style.background = "#4ade80";
+                cell.style.borderColor = "rgba(74, 222, 128, 0.4)";
+            } else if (count > maxCount * 0.25) {
+                cell.style.background = "#86efac";
+                cell.style.borderColor = "rgba(134, 239, 172, 0.4)";
+            } else {
+                cell.style.background = "#bbf7d0";
+                cell.style.borderColor = "rgba(187, 247, 208, 0.4)";
+            }
         }
 
-        container.appendChild(cell);
+        gridDiv.appendChild(cell);
     });
+
+    container.appendChild(gridDiv);
 }
